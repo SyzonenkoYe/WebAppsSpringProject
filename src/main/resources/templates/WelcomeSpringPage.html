@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    h1 {
+        text-align: center;
+        color: #4a90e2;
+        margin: 20px 0;
+    }
+    a {
+        display: inline-block;
+        margin: 10px 0;
+        padding: 10px 20px;
+        background-color: #4a90e2;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    a:hover {
+        background-color: #357ab7;
+    }
+    .container {
+        width: 90%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    .title {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    th {
+        background-color: #4a90e2;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    input[type="text"], select {
+        padding: 8px;
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    button, input[type="submit"] {
+        background-color: #4a90e2;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover, input[type="submit"]:hover {
+        background-color: #357ab7;
+    }
+    form {
+        display: inline;
+    }
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    .filters div {
+        flex: 1;
+        margin: 10px;
+    }
+    @media (max-width: 768px) {
+        .filters div {
+            flex-basis: 100%;
+        }
+        table {
+            font-size: 14px;
+        }
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Spring24 - Welcome!</title>
+
+</head>
+<body>
+<div class="content">
+    <div class="centered">
+        <h1>Spring24: Hello, Spring!
+        </h1>
+        <br>
+        <!--        https://www.thymeleaf.org/doc/articles/springsecurity.html-->
+
+        <h2 sec:authorize="isAuthenticated()">LOG IN: <span sec:authentication="name"></span>
+            (<span sec:authentication="principal.authorities"></span>)
+        </h2>
+        <!--            Button LOGOUT      -->
+        <!-- Important!!!! Mandatory method POST!!!! -->
+        <form th:action="@{/logout}" method="POST" sec:authorize="isAuthenticated()">
+            <button accesskey="d"> LOGOUT </button>
+        </form>
+        <br/>
+        <form action="officeworkers" method="get">
+            <button type="submit">Show All Office Workers</button>
+        </form>
+        <br><br>
+        <h2>Today is <span th:text="${#dates.format(#dates.createNow(),'dd.MM.yyyy')}"></span></h2>
+        <h2><span th:text="${#dates.format(#dates.createNow(), 'EEEE')}"></span></h2>
+    </div>
+</div>
+</body>
+</html>

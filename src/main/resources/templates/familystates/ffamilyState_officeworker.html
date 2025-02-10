@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+    h1 {
+        text-align: center;
+        color: #4a90e2;
+        margin: 20px 0;
+    }
+    a {
+        display: inline-block;
+        margin: 10px 0;
+        padding: 10px 20px;
+        background-color: #4a90e2;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    a:hover {
+        background-color: #357ab7;
+    }
+    .container {
+        width: 90%;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    .title {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    th {
+        background-color: #4a90e2;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    input[type="text"], select {
+        padding: 8px;
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    button, input[type="submit"] {
+        background-color: #4a90e2;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover, input[type="submit"]:hover {
+        background-color: #357ab7;
+    }
+    form {
+        display: inline;
+    }
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+    .filters div {
+        flex: 1;
+        margin: 10px;
+    }
+    @media (max-width: 768px) {
+        .filters div {
+            flex-basis: 100%;
+        }
+        table {
+            font-size: 14px;
+        }
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Spring24 - FAMILY STATE</title>
+</head>
+<body>
+<div class="content">
+    <div class="centered">
+        <a th:href="@{/officeworkers}">TO OFFICE WORKERS</a>
+        <h1>FAMILY STATE</h1>
+        <h1 th:text="${worker.surname+ ' ' + worker.name + ' ' + worker.pname}"></h1>
+        <!-- IF FFamily State Absent -->
+        <div th:if="${(ffamilyState.getId()==null) and (editmode == false)}">
+            <table style="border: #000000">
+                <tbody>
+                <tr>
+                    <td style="border: #000000;">
+                        <form th:action="@{/officeworkers/{idOfficeWorker}/ffamilyState/edit (idOfficeWorker=${worker.id})}">
+                            <button type="submit"> INSERT FAMILY STATE</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- ELSE -->
+        <div th:if="${(ffamilyState.id != null) or ((ffamilyState.id == null) and (editmode == true))}">
+            <div th:if="${editmode == false}">
+                <table style="border: #000000">
+                    <tbody>
+                    <tr style="border: #000000">
+                        <td style="border: #000000" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                            <form th:action="@{/officeworkers/{idOfficeWorker}/ffamilyState/edit (idOfficeWorker=${worker.id})}">
+                                <button type="submit"> UPDATE FAMILY STATE</button>
+                            </form>
+                            <form th:action="@{/officeworkers/{idOfficeWorker}/ffamilyState/del (idOfficeWorker=${worker.id})}" method="POST">
+                                <button type="submit" onclick="return confirmation()"> DELETE FAMILY STATE
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <form th:action="@{/officeworkers/{idOfficeWorker}/ffamilyState/save (idOfficeWorker=${worker.id})}" th:object="${ffamilyState}"
+                  method="POST">
+                <p>
+                    <label for="officeworker_famState"> Family state: </label></p>
+                <p>
+                    <select id="officeworker_famState" name="officeWorkerFamilyState" th:field="*{officeWorkerFamilyState}" required>
+                        <option th:each="pl : ${T(stusyo222b.webappsspringproject.enums.OfficeWorkerFamilyState).values()}"
+                                th:value="${pl}" th:text="${pl.getDisplayName()} "
+                                th:selected="${officeWorkerFamilyState==pl}"></option>
+                    </select>
+                </p>
+                <p>
+                    <label for="num_child"> Number of children: </label></p>
+                <p>
+                    <input id="num_child" required
+                           type="text"
+                           name="numChild"
+                           th:field="*{numChild}"
+                           title="Enter the number of your children"
+                    />
+                </p>
+                <p>
+                    <label for="num_little_child">Number of children under the age of 18: </label></p>
+                <p>
+                    <input id="num_little_child" required
+                           type="text"
+                           name="numLittleChild"
+                           th:field="*{numLittleChild}"
+                           placeholder="Number of children under age of 18: "
+                    />
+                </p>
+                <p>
+                    <label for="is_apart_owner">Owns an apartment:</label>
+                </p>
+                <p>
+                    <input type="checkbox" id="is_apart_owner"
+                           name="isApartOwner"
+                           th:field="*{apartOwner}"
+                           th:checked="*{apartOwner}"
+                    />
+                </p>
+
+
+
+
+                <div th:if="${editmode == true }">
+                    <input hidden name="editmode" value="false">
+                    <button type="submit"> SAVE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    // For confirm deleting
+    function confirmation() {
+        return confirm('Are sure what you want to delete this data??');
+    }
+</script>
+</html>
